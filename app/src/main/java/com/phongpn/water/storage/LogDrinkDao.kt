@@ -1,8 +1,7 @@
-package com.phongpn.water.storge
+package com.phongpn.water.storage
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.phongpn.water.entity.LogDaily
 import com.phongpn.water.entity.LogDrink
 
 @Dao

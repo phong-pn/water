@@ -149,9 +149,4 @@ class WaterIntakeParams: BaseProfileParamsObserve(), SaveToSharePreference {
         this.amount = amount
     }
 
-    fun getAmountByUnit() = when(UnitParams.getInstance().unitDrink){
-        OZ_US -> amount.toOz_Us(ML)
-        OZ_UK -> amount.toOz_Uk(ML)
-        else -> amount
-    }
 }

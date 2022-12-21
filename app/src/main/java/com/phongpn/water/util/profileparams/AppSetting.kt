@@ -23,11 +23,6 @@ class AppSetting : BaseProfileParamsObserve(), SaveToSharePreference {
             field = value
             notifyDataChanged(SOUND, field)
         }
-    var theme = WATER_THEME
-        set(value) {
-            field = value
-            notifyDataChanged(THEME, field)
-        }
     var firstLaunch = true
     var launch = 0
 

@@ -6,7 +6,7 @@ import android.os.PowerManager
 import androidx.activity.addCallback
 import com.phongpn.water.R
 import com.phongpn.water.notification.AlarmSchedule
-import com.phongpn.water.storge.Pref
+import com.phongpn.water.storage.Pref
 import com.phongpn.water.ui.base.BaseActivity
 import com.phongpn.water.ui.base.BaseFragment
 import com.phongpn.water.ui.dialog.base.Modifier

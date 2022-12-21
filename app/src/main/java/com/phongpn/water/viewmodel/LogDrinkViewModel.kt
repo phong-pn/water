@@ -3,10 +3,9 @@ package com.phongpn.water.viewmodel
 import androidx.lifecycle.*
 import com.phongpn.water.entity.LogDaily
 import com.phongpn.water.entity.LogDrink
-import com.phongpn.water.storge.LogDrinkRepo
+import com.phongpn.water.storage.LogDrinkRepo
 import com.phongpn.water.util.constant.params.ML
 import com.phongpn.water.util.toMl
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LogDrinkViewModel : ViewModel() {

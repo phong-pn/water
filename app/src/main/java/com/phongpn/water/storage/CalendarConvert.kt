@@ -1,4 +1,4 @@
-package com.phongpn.water.storge
+package com.phongpn.water.storage
 
 import androidx.room.TypeConverter
 import java.util.*

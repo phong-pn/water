@@ -1,4 +1,4 @@
-package com.phongpn.water.storge
+package com.phongpn.water.storage
 
 import android.content.Context
 import android.util.Log

@@ -5,14 +5,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import com.phongpn.water.storge.LogDrinkRepo
-import com.phongpn.water.storge.Pref
+import com.phongpn.water.storage.LogDrinkRepo
+import com.phongpn.water.storage.Pref
+import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.util.CHANNEL_ID
 
 class Application : Application() {
     override fun onCreate() {
         super.onCreate()
         Pref.getData(this)
+        SharePrefUtil.init(this)
         LogDrinkRepo.initDao(this)
         createNotificationChannel()
     }

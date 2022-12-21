@@ -9,14 +9,13 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.phongpn.water.R
 import com.phongpn.water.entity.LogDrink
 import com.phongpn.water.notification.AlarmSchedule
-import com.phongpn.water.storge.LogDrinkRepo
+import com.phongpn.water.storage.LogDrinkRepo
 import com.phongpn.water.ui.MainActivity
 import com.phongpn.water.util.CHANNEL_ID
 import com.phongpn.water.util.constant.params.ML
