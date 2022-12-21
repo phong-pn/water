@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="text" parent="Widget.MaterialComponents.TextView">
+        <item name="font">@font/roboto</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="text.Blue" parent="text">
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <style name="text.Blue.Medium" parent="text.Blue">
+        <item name="font">@font/roboto_medium</item>
+    </style>
+    
+
+    <style name="item_setting" >
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="header">
+        <item name="expansion_toggleOnClick">true</item>
+        <item name="expansion_headerIndicatorRotationCollapsed">0</item>
+        <item name="expansion_headerIndicatorRotationExpanded">90</item>
+        <item name="expansion_openOnlyOne">true</item>
+    </style>
+    <style name="check_box" parent="Widget.AppCompat.CompoundButton.CheckBox">
+
+        <item name="android:button">@drawable/checkbox_custom</item>
+    </style>
+  <style name="number_picker" parent="">
+      <item name="fontFamily">@font/roboto_bold</item>
+      <item name="android:textStyle">bold</item>
+      <item name="np_itemSpacing">1dp</item>
+      <item name="np_dividerThickness">0dp</item>
+      <item name="np_textColor">#B9B9B9</item>
+      <item name="np_selectedTextColor">@color/blue</item>
+      <item name="np_textSize">18sp</item>
+      <item name="np_selectedTextSize">18sp</item>
+
+  </style>
+    <style name="button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">52dp</item>
+        <item name="font">@font/roboto</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/blue</item>
+        <item name="backgroundTint">@color/white</item>
+    </style>
+    
+    <style name="gradient_textview" >
+        <item name="orientation">90</item>
+        <item name="isChoose">false</item>
+        <item name="background_color_when_choose">@color/blue</item>
+        <item name="android:gravity">center</item>
+        <item name="startColor">#A0C9FA</item>
+        <item name="endColor">@color/white</item>
+    </style>
+
+    <style name="shape_icon_splash">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="Dialog_Theme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="windowFixedWidthMajor">90%</item>
+        <item name="windowFixedWidthMinor">90%</item>
+    </style>
+
+
+</resources>

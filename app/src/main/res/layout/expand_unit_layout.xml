@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/selected_container_corner"
+    android:backgroundTint="@color/white"
+    android:focusable="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <com.github.florent37.expansionpanel.ExpansionHeader
+        app:expansion_layout="@id/expand_unit_layout"
+        android:focusable="true"
+        android:clickable="true"
+        android:background="@drawable/selected_container_corner"
+        android:backgroundTint="@color/white"
+        android:id="@+id/expand_unit_header"
+        style="@style/header"
+        app:expansion_headerIndicator="@id/indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/text.Blue"
+            android:textStyle="bold"
+            android:text="@string/unit"
+            android:textSize="14sp"
+            android:layout_margin="16dp"/>
+        <ImageView
+            android:layout_marginEnd="8dp"
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_keyboard_arrow_right_24"
+            android:layout_gravity="end|center" />
+    </com.github.florent37.expansionpanel.ExpansionHeader>
+
+    <com.github.florent37.expansionpanel.ExpansionLayout
+        app:expansion_expanded="false"
+        android:id="@+id/expand_unit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_gravity="top"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/blue"/>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:padding="12dp"
+                android:id="@+id/list_unit"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal">
+
+                <com.phongpn.water.util.widget.GradientBackgroundTextView
+                    style="@style/gradient_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="ml"/>
+
+                <com.phongpn.water.util.widget.GradientBackgroundTextView
+                    style="@style/gradient_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="oz US"/>
+                <com.phongpn.water.util.widget.GradientBackgroundTextView
+                    style="@style/gradient_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="oz UK"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.github.florent37.expansionpanel.ExpansionLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

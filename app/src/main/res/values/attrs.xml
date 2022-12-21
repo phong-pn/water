@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="startColor" format="color"/>
+    <attr name="endColor" format="color"/>
+    <attr name="isChoose" format="boolean"/>
+    <attr name="orientation" format="integer"/>
+    <attr name="background" format="reference"/>
+    <attr name="background_color_when_choose" format="color"/>
+
+
+    <declare-styleable name="GradientImageButton">
+        <attr name="startColor"/>
+        <attr name="endColor"/>
+        <attr name="isChoose"/>
+        <attr name="orientation"/>
+        <attr name="background"/>
+        <attr name="background_color_when_choose"/>
+        <attr name="icon_color_when_choose" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="GradientBackgroundTextView">
+        <attr name="startColor"/>
+        <attr name="endColor"/>
+        <attr name="isChoose" />
+        <attr name="orientation"/>
+        <attr name="background"/>
+        <attr name="background_color_when_choose"/>
+        <attr name="text_color_when_choose" format="color"/>
+    </declare-styleable>
+</resources>

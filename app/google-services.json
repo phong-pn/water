@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "263312151543",
+    "project_id": "water-remind-proxg-phong",
+    "storage_bucket": "water-remind-proxg-phong.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263312151543:android:30081b76707336295d14f2",
+        "android_client_info": {
+          "package_name": "com.drink.water.reminder.water.tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "263312151543-lln2j38ghr90be4m8tbji0t1iptiopb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbUwP7q2UKUwRSehvzIu9lenT8CsjdA8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "263312151543-lln2j38ghr90be4m8tbji0t1iptiopb7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263312151543:android:da6852cef5d3888f5d14f2",
+        "android_client_info": {
+          "package_name": "com.phongpn.water"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "263312151543-lln2j38ghr90be4m8tbji0t1iptiopb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbUwP7q2UKUwRSehvzIu9lenT8CsjdA8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "263312151543-lln2j38ghr90be4m8tbji0t1iptiopb7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
