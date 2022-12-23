@@ -2,6 +2,7 @@ package com.phongpn.water.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.util.constant.params.OZ_US
 import com.phongpn.water.util.profileparams.AppSetting
 import com.phongpn.water.util.profileparams.UnitParams
@@ -12,64 +13,62 @@ import com.phongpn.water.util.toMl
 class MainViewModel : ViewModel() {
     val appSetting = MutableLiveData(AppSetting())
 
+    val sound = MutableLiveData(SharePrefUtil.sound)
     fun setSound(sound: Boolean) {
-        val value = appSetting.value
-        value?.sound = sound
-        appSetting.postValue(value)
+        this.sound.postValue(sound)
+        SharePrefUtil.sound = sound
     }
 
     val unitParams = MutableLiveData(UnitParams())
 
+    val unitDrink = MutableLiveData(SharePrefUtil.unitDrink)
     fun setUnitDrink(unit: String) {
-        val value = unitParams.value
-        value?.unitDrink = unit
-        unitParams.postValue(value)
+        this.unitDrink.postValue(unit)
+        SharePrefUtil.unitDrink = unit
     }
 
+    val unitWeight = MutableLiveData(SharePrefUtil.unitWeight)
     fun setUnitWeight(unit: String) {
-        val value = unitParams.value
-        value?.unitWeight = unit
-        unitParams.postValue(value)
+        this.unitWeight.postValue(unit)
+        SharePrefUtil.unitWeight = unit
     }
-
 
     val waterIntakeParams = MutableLiveData(WaterIntakeParams())
 
+    val sex = MutableLiveData(SharePrefUtil.sex)
     fun setSex(sex: String) {
-        val value = waterIntakeParams.value
-        value?.sex = sex
-        waterIntakeParams.postValue(value)
+        this.sex.postValue(sex)
+        SharePrefUtil.sex = sex
     }
 
+    val pregnant = MutableLiveData(SharePrefUtil.pregnant)
     fun setPregnant(pregnant: Boolean) {
-        val value = waterIntakeParams.value
-        value?.pregnant = pregnant
-        waterIntakeParams.postValue(value)
+        this.pregnant.postValue(pregnant)
+        SharePrefUtil.pregnant = pregnant
     }
 
+    val breastfeeding = MutableLiveData(SharePrefUtil.breastfeeding)
     fun setBreastFeeding(breastfeeding: Boolean) {
-        val value = waterIntakeParams.value
-        value?.breastfeeding = breastfeeding
-        waterIntakeParams.postValue(value)
+        this.breastfeeding.postValue(breastfeeding)
+        SharePrefUtil.breastfeeding = breastfeeding
     }
 
+    val weight = MutableLiveData(SharePrefUtil.weight)
     fun setWeight(weight: Int) {
-        val value = waterIntakeParams.value
-        value?.weight = weight
-        waterIntakeParams.postValue(value)
+        this.weight.postValue(weight)
+        SharePrefUtil.weight = weight
     }
 
+    val activity = MutableLiveData(SharePrefUtil.activity)
     fun setActivity(activity: String) {
-        val value = waterIntakeParams.value
-        value?.activity = activity
-        waterIntakeParams.postValue(value)
+        this.activity.postValue(activity)
+        SharePrefUtil.activity = activity
     }
 
-
+    val weather = MutableLiveData(SharePrefUtil.weather)
     fun setWeather(weather: String) {
-        val value = waterIntakeParams.value
-        value?.weather = weather
-        waterIntakeParams.postValue(value)
+        this.weather.postValue(weather)
+        SharePrefUtil.weather = weather
     }
 
 
@@ -104,10 +103,6 @@ class MainViewModel : ViewModel() {
                 WaterIntakeParams.TEMPERATE -> amount += 300
                 WaterIntakeParams.HOT -> amount += 700
             }
-            if (hotDay) amount += 500
-
-            if (activeDay) amount += 500
-
             this.amount = amount
         }
     }
