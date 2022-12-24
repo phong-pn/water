@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.phongpn.water.R
+import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.ui.dialog.base.BaseBottomSheetDialogFragment
 import com.phongpn.water.ui.dialog.SelectedBottomSheetFragment
 import com.phongpn.water.ui.greetings.changeColorCheckBox
@@ -20,6 +22,7 @@ import com.phongpn.water.util.profileparams.WaterIntakeParams.Companion.LIGHT_AC
 import com.phongpn.water.util.profileparams.WaterIntakeParams.Companion.SEDENTARY
 import com.phongpn.water.util.profileparams.WaterIntakeParams.Companion.TEMPERATE
 import com.phongpn.water.util.profileparams.WaterIntakeParams.Companion.VERY_ACTIVE
+import com.phongpn.water.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.water_intake_fragment.*
 
 class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
@@ -31,6 +34,7 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
     private val listDetailClimate = mutableListOf<String?>()
     private val unitParams = UnitParams.getInstance()
     private val waterIntakeParams = WaterIntakeParams.getInstance()
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
 
     override fun onCreateView(
@@ -81,7 +85,6 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
             typeface = typefaceBold
             setSelectedTypeface(typefaceBold)
             minValue = 1
-            setupWeightPicker()
             setOnValueChangedListener { _, _, newVal -> waterIntakeParams.weight = newVal }
         }
 
@@ -89,7 +92,6 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
             typeface = typefaceBold
             setSelectedTypeface(typefaceBold)
             minValue = 1
-            setupAmountPicker()
         }
 
         unit_drink_picker.apply {
@@ -106,45 +108,35 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
             }
             setOnValueChangedListener { _, _, newVal -> unitParams.unitDrink = unit[newVal] }
         }
-        setupAmountPicker()
-        setupWeightPicker()
 
         addListener()
         addObserver()
     }
 
     private fun addObserver() {
-        unitParams.observe { type, _ ->
-            when(type){
-                UnitParams.UNIT_WEIGHT ->{
-                    setupWeightPicker()
-                }
-                UnitParams.UNIT_DRINK -> {
-                    setupAmountPicker()
-                }
+        mainViewModel.apply {
+            unitWeight.observe(viewLifecycleOwner) {
+                setupWeightPicker(it)
             }
-        }
-        waterIntakeParams.observe { type, _ ->
-            when (type) {
-                WaterIntakeParams.AMOUNT -> {
-                    setupAmountPicker()
-                }
+
+            amount.observe(viewLifecycleOwner) {
+                setupAmountPicker()
             }
         }
     }
 
-    private fun setupWeightPicker() {
+    private fun setupWeightPicker(unitWeight: String) {
         val MAX_KG = 250
         val MAX_LBS = MAX_KG.toLbs(KG)
         weight_picker.apply {
             try {
-                if (unitParams.unitWeight == KG){
+                if (unitWeight == KG){
                     maxValue = MAX_KG
-                    value = waterIntakeParams.weight
+                    value = SharePrefUtil.weight
                 }
                 else {
                     maxValue = MAX_LBS
-                    value = waterIntakeParams.weight.toLbs(KG)
+                    value = SharePrefUtil.weight.toLbs(KG)
                 }
             }
             catch (e :Exception){
@@ -161,7 +153,7 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
         val MAX_OZ_US = MAX_ML.toOz_Us(ML)
         amount_drink_picker.apply {
             try{
-                when(unitParams.unitDrink){
+                when(SharePrefUtil.unitDrink){
                     ML ->{
                         var display = arrayOf<String>()
                         maxValue = 1
@@ -169,14 +161,14 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
                         displayedValues = display
                         minValue = 0
                         maxValue = display.size - 1
-                        value = display.indexOf(waterIntakeParams.amount.toMl(ML).toString())
+                        value = display.indexOf(SharePrefUtil.amount.toMl(ML).toString())
                         setOnValueChangedListener { _, _, newVal -> waterIntakeParams.amount = display[newVal].toInt() }
                     }
                     OZ_UK -> {
                         displayedValues = null
                         minValue = 1
                         maxValue = MAX_OZ_UK
-                        value = waterIntakeParams.amount.toOz_Uk(ML)
+                        value = SharePrefUtil.amount.toOz_Uk(ML)
                         setOnValueChangedListener { _, _, newVal -> waterIntakeParams.amount = newVal.toMl(
                             OZ_UK) }
                     }
@@ -184,7 +176,7 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
                         displayedValues = null
                         minValue = 1
                         maxValue = MAX_OZ_US
-                        value = waterIntakeParams.amount.toOz_Us(ML)
+                        value = SharePrefUtil.amount.toOz_Us(ML)
                         setOnValueChangedListener { _, _, newVal -> waterIntakeParams.amount = newVal.toMl(
                             OZ_US) }
                     }
@@ -247,8 +239,8 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title)  {
             }
             climate_bt.apply {
                 text = when(weather){
-                    WaterIntakeParams.COLD -> listClimate[0]
-                    WaterIntakeParams.TEMPERATE -> listClimate[1]
+                    COLD -> listClimate[0]
+                    TEMPERATE -> listClimate[1]
                     else -> listClimate[2]
                 }
                 setOnClickListener {

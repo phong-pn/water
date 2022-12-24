@@ -17,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.phongpn.water.R
 import com.phongpn.water.adapter.ListDrinkIconAdapter
-import com.phongpn.water.adapter.ListDrinkIconAdapter.*
+import com.phongpn.water.adapter.ListDrinkIconAdapter.DrinkIconData
 import com.phongpn.water.entity.LogDrink
 import com.phongpn.water.notification.Alarm
 import com.phongpn.water.notification.AlarmSchedule
@@ -30,11 +30,12 @@ import com.phongpn.water.util.*
 import com.phongpn.water.util.constant.params.ML
 import com.phongpn.water.util.constant.params.OZ_UK
 import com.phongpn.water.util.constant.params.OZ_US
-import com.phongpn.water.util.profileparams.AppSetting
 import com.phongpn.water.util.profileparams.UnitParams
 import com.phongpn.water.util.profileparams.WaterIntakeParams
 import com.phongpn.water.viewmodel.LogDrinkViewModel
+import com.phongpn.water.viewmodel.MainFragmentUiState
 import com.phongpn.water.viewmodel.MainFragmentViewModel
+import com.phongpn.water.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -43,9 +44,10 @@ import java.util.*
 
 
 class HomeFragment : BaseFragment() {
-    private val logDrinkViewModel : LogDrinkViewModel by activityViewModels()
+    private val logDrinkViewModel: LogDrinkViewModel by activityViewModels()
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
-    private val mainFragmentViewModel : MainFragmentViewModel by viewModels ()
+    private val mainFragmentViewModel: MainFragmentViewModel by viewModels()
 
     private val waterIntakeParams = WaterIntakeParams.getInstance()
     private val unitParams = UnitParams.getInstance()
@@ -70,7 +72,8 @@ class HomeFragment : BaseFragment() {
             observers = mutableListOf()
             observe { _, alarm ->
                 alarm as Alarm
-                alarm_tv.text = formatTime(Calendar.getInstance().apply { timeInMillis = alarm.time } )
+                alarm_tv.text =
+                    formatTime(Calendar.getInstance().apply { timeInMillis = alarm.time })
             }
             lifecycleScope.launch {
                 while (true) {
@@ -86,117 +89,128 @@ class HomeFragment : BaseFragment() {
 
     private fun setupViews() {
         shortcut_icon_rv.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false).apply {
-                clipChildren = false
-            }
+            layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false).apply {
+                    clipChildren = false
+                }
             clipChildren = false
-            adapter = ShortcutDrinkIconAdapter(emptyList()){
+            adapter = ShortcutDrinkIconAdapter(emptyList()) {
                 mainFragmentViewModel.shortcutIcon.value!![it].apply {
                     vibrate()
-                    logDrinkViewModel.insert( LogDrink(amount, type, Calendar.getInstance()))
+                    logDrinkViewModel.insert(LogDrink(amount, type, Calendar.getInstance()))
                 }
             }
         }
         addListenerForView()
     }
 
-    private fun addObserver(){
-        logDrinkViewModel.totalAll.observe(viewLifecycleOwner){
+    private fun addObserver() {
+        logDrinkViewModel.totalAll.observe(viewLifecycleOwner) {
             val currentDate = LogDrink.createIdDate(Calendar.getInstance())
             var drinkToday = false
-            for (log in it){
+            for (log in it) {
                 if (log.idDate == currentDate) {
-                    mainFragmentViewModel.currentTotalDrinkToday.postValue(log.total)
+                    mainFragmentViewModel.changeTotalDrinkToday(log.total!!)
                     drinkToday = true
                     break
                 }
             }
-            if (!drinkToday) mainFragmentViewModel.currentTotalDrinkToday.postValue(0)
+            if (!drinkToday) mainFragmentViewModel.changeTotalDrinkToday(0)
 
         }
+        mainViewModel.apply {
+            unitDrink.observe(viewLifecycleOwner) {
+                mainFragmentViewModel.changeUnitDrink()
+            }
+        }
         mainFragmentViewModel.apply {
-            currentTotalDrinkToday.observe(viewLifecycleOwner){ total->
-                changeWave(total, waterIntakeParams.amount)
+            mainFragmentUiState.observe(viewLifecycleOwner) {
+                it?.let { changeWave(it) }
             }
-            unitDrink.observe(viewLifecycleOwner){
-                currentTotalDrinkToday.value?.let { total -> changeWave(total, waterIntakeParams.amount) }
-            }
-            totalDrinkToday.observe(viewLifecycleOwner){totalToday ->
-                currentTotalDrinkToday.value?.let { currentTotal ->
-                    changeWave(currentTotal, totalToday)
-                }
-            }
-            unitParams.observe { type, data -> when(type){
-                UnitParams.UNIT_DRINK -> unitDrink.postValue(data as String)
-                }
-            }
+//            currentTotalDrinkToday.observe(viewLifecycleOwner) { total ->
+//                changeWave(total, waterIntakeParams.amount)
+//            }
+//            unitDrink.observe(viewLifecycleOwner) {
+//                currentTotalDrinkToday.value?.let { total ->
+//                    changeWave(total, waterIntakeParams.amount)
+//                }
+//            }
+//            totalDrinkToday.observe(viewLifecycleOwner) { totalToday ->
+//                currentTotalDrinkToday.value?.let { currentTotal ->
+//                    changeWave(currentTotal, totalToday)
+//                }
+//            }
+//            unitParams.observe { type, data ->
+//                when (type) {
+//                    UnitParams.UNIT_DRINK -> unitDrink.postValue(data as String)
+//                }
+//            }
 
-            waterIntakeParams.observe { type, data -> when(type){
-                WaterIntakeParams.AMOUNT -> totalDrinkToday.postValue(data as Int)
-                }
-            }
+//            waterIntakeParams.observe { type, data ->
+//                when (type) {
+//                    WaterIntakeParams.AMOUNT -> totalDrinkToday.postValue(data as Int)
+//                }
+//            }
 
 
-            val blue = ContextCompat.getColor(context!!, R.color.blue)
-            isHotDay.observe(viewLifecycleOwner){
-                if (it) {
-                    waterIntakeParams.hotDay = true
-                    hot_day_tv.setTextColor(Color.WHITE)
-                    ((hot_day_frame.background as RippleDrawable).getDrawable(0)).changeGradient(
-                        Color.parseColor("#014DFF"),
-                        Color.parseColor("#23A9FF"),
-                        GradientDrawable.Orientation.RIGHT_LEFT
-                    )
-                    icon_hot_day.apply {
-                        setColorFilter(blue)
-                        background.setTint(Color.WHITE)
-                    }
-                }
-                else {
-                    waterIntakeParams.hotDay  = false
-                    hot_day_tv.setTextColor(blue)
-                    hot_day_frame.background.setTint(Color.WHITE)
-                    icon_hot_day.apply {
-                        setColorFilter(Color.WHITE)
-                        background.changeGradient(
-                            Color.parseColor("#014DFF"),
-                            Color.parseColor("#23A9FF"),
-                            GradientDrawable.Orientation.BOTTOM_TOP
-                        )
-                    }
-                }
-            }
+//            val blue = ContextCompat.getColor(context!!, R.color.blue)
+//            isHotDay.observe(viewLifecycleOwner) {
+//                if (it) {
+//                    waterIntakeParams.hotDay = true
+//                    hot_day_tv.setTextColor(Color.WHITE)
+//                    ((hot_day_frame.background as RippleDrawable).getDrawable(0)).changeGradient(
+//                        Color.parseColor("#014DFF"),
+//                        Color.parseColor("#23A9FF"),
+//                        GradientDrawable.Orientation.RIGHT_LEFT
+//                    )
+//                    icon_hot_day.apply {
+//                        setColorFilter(blue)
+//                        background.setTint(Color.WHITE)
+//                    }
+//                } else {
+//                    waterIntakeParams.hotDay = false
+//                    hot_day_tv.setTextColor(blue)
+//                    hot_day_frame.background.setTint(Color.WHITE)
+//                    icon_hot_day.apply {
+//                        setColorFilter(Color.WHITE)
+//                        background.changeGradient(
+//                            Color.parseColor("#014DFF"),
+//                            Color.parseColor("#23A9FF"),
+//                            GradientDrawable.Orientation.BOTTOM_TOP
+//                        )
+//                    }
+//                }
+//            }
+//
+//            isActivateDay.observe(viewLifecycleOwner) {
+//                if (it) {
+//                    waterIntakeParams.activeDay = true
+//                    active_tv.setTextColor(Color.WHITE)
+//                    (activity_frame.background as RippleDrawable).getDrawable(0).changeGradient(
+//                        Color.parseColor("#014DFF"),
+//                        Color.parseColor("#23A9FF"),
+//                        GradientDrawable.Orientation.RIGHT_LEFT
+//                    )
+//                    icon_activity.apply {
+//                        setColorFilter(blue)
+//                        background.setTint(Color.WHITE)
+//                    }
+//                } else {
+//                    waterIntakeParams.activeDay = false
+//                    active_tv.setTextColor(blue)
+//                    activity_frame.background.setTint(Color.WHITE)
+//                    icon_activity.apply {
+//                        setColorFilter(Color.WHITE)
+//                        background.changeGradient(
+//                            Color.parseColor("#014DFF"),
+//                            Color.parseColor("#23A9FF"),
+//                            GradientDrawable.Orientation.BOTTOM_TOP
+//                        )
+//                    }
+//                }
+//            }
 
-            isActivateDay.observe(viewLifecycleOwner){
-                if (it) {
-                    waterIntakeParams.activeDay = true
-                    active_tv.setTextColor(Color.WHITE)
-                    (activity_frame.background as RippleDrawable).getDrawable(0).changeGradient(
-                        Color.parseColor("#014DFF"),
-                        Color.parseColor("#23A9FF"),
-                        GradientDrawable.Orientation.RIGHT_LEFT
-                    )
-                    icon_activity.apply {
-                        setColorFilter(blue)
-                        background.setTint(Color.WHITE)
-                    }
-                }
-                else {
-                    waterIntakeParams.activeDay = false
-                    active_tv.setTextColor(blue)
-                    activity_frame.background.setTint(Color.WHITE)
-                    icon_activity.apply {
-                        setColorFilter(Color.WHITE)
-                        background.changeGradient(
-                            Color.parseColor("#014DFF"),
-                            Color.parseColor("#23A9FF"),
-                            GradientDrawable.Orientation.BOTTOM_TOP
-                        )
-                    }
-                }
-            }
-
-            shortcutIcon.observe(viewLifecycleOwner){
+            shortcutIcon.observe(viewLifecycleOwner) {
                 it?.let {
                     (shortcut_icon_rv.adapter as ListDrinkIconAdapter).update(it.map {
                         DrinkIconData(it.type, it.amount, it.isSelected)
@@ -206,21 +220,48 @@ class HomeFragment : BaseFragment() {
             }
         }
     }
-    private fun changeWave(current: Int, des: Int){
-        val ratio = ((current/ des.toFloat()) * 100).toInt().apply {
+
+    private fun changeWave(state: MainFragmentUiState) {
+        state.apply {
+            wave.setProgress(100 - process.toInt())
+            intake_drink_tv.text = intakePreview
+            if (process < 100) {
+                enough_drink_tv.text = getString(R.string.you_have_to_drink)
+                remain_drink_tv.text = "$this ${unitParams.unitDrink}"
+                remain_drink_tv.invalidate()
+                ratio_drink_tv.apply {
+                    text = "$process %"
+                    visibility = View.VISIBLE
+                    remain_drink_tv.textSize = 14f
+                }
+            } else {
+                enough_drink_tv.text = getString(R.string.enough_drink)
+                remain_drink_tv.apply {
+                    textSize = 28f
+                    text = getString(R.string.keep_it_that_way)
+                    invalidate()
+                }
+                ratio_drink_tv.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun changeWave(current: Int, des: Int) {
+        val ratio = ((current / des.toFloat()) * 100).toInt().apply {
             wave.setProgress(100 - this)
         }
-        val mCurrent = when(unitParams.unitDrink){
+        val mCurrent = when (unitParams.unitDrink) {
             OZ_US -> current.toOz_Us(ML)
             OZ_UK -> current.toOz_Uk(ML)
             else -> current
         }
-        val mTotal = when(unitParams.unitDrink){
+        val mTotal = when (unitParams.unitDrink) {
             OZ_US -> des.toOz_Us(ML)
             OZ_UK -> des.toOz_Uk(ML)
             else -> des
         }
-        intake_drink_tv.text = "$mCurrent ${unitParams.unitDrink} / $mTotal ${unitParams.unitDrink} "
+        intake_drink_tv.text =
+            "$mCurrent ${unitParams.unitDrink} / $mTotal ${unitParams.unitDrink} "
         (mTotal - mCurrent).apply {
             if (this > 0) {
                 enough_drink_tv.text = getString(R.string.you_have_to_drink)
@@ -232,8 +273,7 @@ class HomeFragment : BaseFragment() {
                     remain_drink_tv.textSize = 14f
                 }
 
-            }
-            else{
+            } else {
                 enough_drink_tv.text = getString(R.string.enough_drink)
                 remain_drink_tv.apply {
                     textSize = 28f
@@ -244,6 +284,7 @@ class HomeFragment : BaseFragment() {
             }
         }
     }
+
     private fun addListenerForView() {
         rippleBackground.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Default) {
@@ -257,7 +298,13 @@ class HomeFragment : BaseFragment() {
                 )
                     .onInsertLog { log ->
                         logDrinkViewModel.insert(log)
-                        mainFragmentViewModel.addShortcutIcon(DrinkIconData(log.type, log.amount, false))
+                        mainFragmentViewModel.addShortcutIcon(
+                            DrinkIconData(
+                                log.type,
+                                log.amount,
+                                false
+                            )
+                        )
                     }
                     .show(childFragmentManager, null)
             }
@@ -284,8 +331,14 @@ class HomeFragment : BaseFragment() {
                 if (value == true)
                     Toast.makeText(
                         context,
-                        getString(R.string.daily_norm) + "+${formatDrinkUnit(500, ML)} " + "( ${getString(R.string.hot_day)})",
-                        Toast.LENGTH_SHORT).show()
+                        getString(R.string.daily_norm) + "+${
+                            formatDrinkUnit(
+                                500,
+                                ML
+                            )
+                        } " + "( ${getString(R.string.hot_day)})",
+                        Toast.LENGTH_SHORT
+                    ).show()
             }
         }
 
@@ -297,14 +350,21 @@ class HomeFragment : BaseFragment() {
                 if (value == true)
                     Toast.makeText(
                         context,
-                        getString(R.string.daily_norm) + "+${formatDrinkUnit(500, ML)} " + "( ${getString(R.string.active)})",
-                        Toast.LENGTH_SHORT).show()
+                        getString(R.string.daily_norm) + "+${
+                            formatDrinkUnit(
+                                500,
+                                ML
+                            )
+                        } " + "( ${getString(R.string.active)})",
+                        Toast.LENGTH_SHORT
+                    ).show()
             }
         }
     }
-    private fun vibrate(){
+
+    private fun vibrate() {
         val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        vibrator.vibrate(longArrayOf(0,70), -1)
+        vibrator.vibrate(longArrayOf(0, 70), -1)
     }
 
 }

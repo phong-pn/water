@@ -71,11 +71,10 @@ class MainViewModel : ViewModel() {
         SharePrefUtil.weather = weather
     }
 
-
+    val amount = MutableLiveData(SharePrefUtil.amount)
     fun setAmount(amount: Int) {
-        val value = waterIntakeParams.value
-        value?.amount = amount
-        waterIntakeParams.postValue(value)
+        this.amount.postValue(amount)
+        SharePrefUtil.amount = amount
     }
 
     private fun calculate() {
@@ -104,6 +103,7 @@ class MainViewModel : ViewModel() {
                 WaterIntakeParams.HOT -> amount += 700
             }
             this.amount = amount
+            setAmount(amount)
         }
     }
 }
