@@ -127,88 +127,6 @@ class HomeFragment : BaseFragment() {
             mainFragmentUiState.observe(viewLifecycleOwner) {
                 it?.let { changeWave(it) }
             }
-//            currentTotalDrinkToday.observe(viewLifecycleOwner) { total ->
-//                changeWave(total, waterIntakeParams.amount)
-//            }
-//            unitDrink.observe(viewLifecycleOwner) {
-//                currentTotalDrinkToday.value?.let { total ->
-//                    changeWave(total, waterIntakeParams.amount)
-//                }
-//            }
-//            totalDrinkToday.observe(viewLifecycleOwner) { totalToday ->
-//                currentTotalDrinkToday.value?.let { currentTotal ->
-//                    changeWave(currentTotal, totalToday)
-//                }
-//            }
-//            unitParams.observe { type, data ->
-//                when (type) {
-//                    UnitParams.UNIT_DRINK -> unitDrink.postValue(data as String)
-//                }
-//            }
-
-//            waterIntakeParams.observe { type, data ->
-//                when (type) {
-//                    WaterIntakeParams.AMOUNT -> totalDrinkToday.postValue(data as Int)
-//                }
-//            }
-
-
-//            val blue = ContextCompat.getColor(context!!, R.color.blue)
-//            isHotDay.observe(viewLifecycleOwner) {
-//                if (it) {
-//                    waterIntakeParams.hotDay = true
-//                    hot_day_tv.setTextColor(Color.WHITE)
-//                    ((hot_day_frame.background as RippleDrawable).getDrawable(0)).changeGradient(
-//                        Color.parseColor("#014DFF"),
-//                        Color.parseColor("#23A9FF"),
-//                        GradientDrawable.Orientation.RIGHT_LEFT
-//                    )
-//                    icon_hot_day.apply {
-//                        setColorFilter(blue)
-//                        background.setTint(Color.WHITE)
-//                    }
-//                } else {
-//                    waterIntakeParams.hotDay = false
-//                    hot_day_tv.setTextColor(blue)
-//                    hot_day_frame.background.setTint(Color.WHITE)
-//                    icon_hot_day.apply {
-//                        setColorFilter(Color.WHITE)
-//                        background.changeGradient(
-//                            Color.parseColor("#014DFF"),
-//                            Color.parseColor("#23A9FF"),
-//                            GradientDrawable.Orientation.BOTTOM_TOP
-//                        )
-//                    }
-//                }
-//            }
-//
-//            isActivateDay.observe(viewLifecycleOwner) {
-//                if (it) {
-//                    waterIntakeParams.activeDay = true
-//                    active_tv.setTextColor(Color.WHITE)
-//                    (activity_frame.background as RippleDrawable).getDrawable(0).changeGradient(
-//                        Color.parseColor("#014DFF"),
-//                        Color.parseColor("#23A9FF"),
-//                        GradientDrawable.Orientation.RIGHT_LEFT
-//                    )
-//                    icon_activity.apply {
-//                        setColorFilter(blue)
-//                        background.setTint(Color.WHITE)
-//                    }
-//                } else {
-//                    waterIntakeParams.activeDay = false
-//                    active_tv.setTextColor(blue)
-//                    activity_frame.background.setTint(Color.WHITE)
-//                    icon_activity.apply {
-//                        setColorFilter(Color.WHITE)
-//                        background.changeGradient(
-//                            Color.parseColor("#014DFF"),
-//                            Color.parseColor("#23A9FF"),
-//                            GradientDrawable.Orientation.BOTTOM_TOP
-//                        )
-//                    }
-//                }
-//            }
 
             shortcutIcon.observe(viewLifecycleOwner) {
                 it?.let {
@@ -223,55 +141,16 @@ class HomeFragment : BaseFragment() {
 
     private fun changeWave(state: MainFragmentUiState) {
         state.apply {
-            wave.setProgress(process.toInt())
+            wave.setProgress(100 - process.toInt())
             intake_drink_tv.text = intakePreview
             if (process < 100) {
                 enough_drink_tv.text = getString(R.string.you_have_to_drink)
                 remain_drink_tv.text = "$remainToday ${unitParams.unitDrink}"
                 ratio_drink_tv.apply {
-                    text = "$process %"
+                    text = "${process.toInt()} %"
                     visibility = View.VISIBLE
                     remain_drink_tv.textSize = 14f
                 }
-            } else {
-                enough_drink_tv.text = getString(R.string.enough_drink)
-                remain_drink_tv.apply {
-                    textSize = 28f
-                    text = getString(R.string.keep_it_that_way)
-                    invalidate()
-                }
-                ratio_drink_tv.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun changeWave(current: Int, des: Int) {
-        val ratio = ((current / des.toFloat()) * 100).toInt().apply {
-            wave.setProgress(100 - this)
-        }
-        val mCurrent = when (unitParams.unitDrink) {
-            OZ_US -> current.toOz_Us(ML)
-            OZ_UK -> current.toOz_Uk(ML)
-            else -> current
-        }
-        val mTotal = when (unitParams.unitDrink) {
-            OZ_US -> des.toOz_Us(ML)
-            OZ_UK -> des.toOz_Uk(ML)
-            else -> des
-        }
-        intake_drink_tv.text =
-            "$mCurrent ${unitParams.unitDrink} / $mTotal ${unitParams.unitDrink} "
-        (mTotal - mCurrent).apply {
-            if (this > 0) {
-                enough_drink_tv.text = getString(R.string.you_have_to_drink)
-                remain_drink_tv.text = "$this ${unitParams.unitDrink}"
-                remain_drink_tv.invalidate()
-                ratio_drink_tv.apply {
-                    setText("$ratio %")
-                    visibility = View.VISIBLE
-                    remain_drink_tv.textSize = 14f
-                }
-
             } else {
                 enough_drink_tv.text = getString(R.string.enough_drink)
                 remain_drink_tv.apply {
@@ -319,44 +198,6 @@ class HomeFragment : BaseFragment() {
         profile_bt.setOnClickListener {
             (requireActivity() as MainActivity).toBaseFragment<ProfileFragment> {
                 enter = R.anim.left_to_right
-            }
-        }
-
-        hot_day_frame.setOnClickListener {
-            mainFragmentViewModel.isHotDay.apply {
-                value = !value!!
-                waterIntakeParams.hotDay = value!!
-                postValue(value!!)
-                if (value == true)
-                    Toast.makeText(
-                        context,
-                        getString(R.string.daily_norm) + "+${
-                            formatDrinkUnit(
-                                500,
-                                ML
-                            )
-                        } " + "( ${getString(R.string.hot_day)})",
-                        Toast.LENGTH_SHORT
-                    ).show()
-            }
-        }
-
-        activity_frame.setOnClickListener {
-            mainFragmentViewModel.isActivateDay.apply {
-                value = !value!!
-                waterIntakeParams.activeDay = value!!
-                postValue(value!!)
-                if (value == true)
-                    Toast.makeText(
-                        context,
-                        getString(R.string.daily_norm) + "+${
-                            formatDrinkUnit(
-                                500,
-                                ML
-                            )
-                        } " + "( ${getString(R.string.active)})",
-                        Toast.LENGTH_SHORT
-                    ).show()
             }
         }
     }

@@ -22,7 +22,6 @@ class DayLogDrinkAdapter (
 ): RecyclerView.Adapter<DayLogDrinkAdapter.LogDrinkViewHolder>() {
     private val TYPE_ICON = 1
     private val TYPE_HEADER_DAY = 0
-    private val unitParams = UnitParams.getInstance()
 
     inner class LogDrinkViewHolder(itemView: View, val onLogSelect : (LogDrink) -> Unit ) : RecyclerView.ViewHolder(itemView){
         fun bindData(logHeader : LogDrinkHeader){
@@ -31,13 +30,7 @@ class DayLogDrinkAdapter (
                 if (!logHeader.isHeader) header.visibility = View.GONE
                     else header_day.text =  if (DateUtils.isToday(log.cal.timeInMillis))  context.getString(R.string.today) else formatDate(log.cal)
                 log_drink_item.setOnClickListener { onLogSelect(log) }
-                unitParams.apply {
-                    log_amount.text = formatDrinkUnit(log.amount, ML)
-                    observe { _, data ->
-                        log_amount.text = formatDrinkUnit(log.amount, ML)
-                    }
-                }
-
+                log_amount.text = log.amount.toString() + "ml"
                 log.type.apply {
                     log_drink_type.text = this
                     var iconDrawable = 0

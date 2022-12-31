@@ -54,13 +54,6 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <include
-                        android:id="@+id/include5"
-                        layout="@layout/expand_unit_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp" />
-
                     <androidx.constraintlayout.widget.ConstraintLayout
 
                         android:id="@+id/water_intake_frame"

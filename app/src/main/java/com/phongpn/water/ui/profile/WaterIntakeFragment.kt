@@ -100,21 +100,6 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title) {
             minValue = 1
         }
 
-        unit_drink_picker.apply {
-            typeface = typefaceBold
-            setSelectedTypeface(typefaceBold)
-            val unit = arrayOf(ML, OZ_UK, OZ_US)
-            displayedValues = unit
-            minValue = 0
-            maxValue = unit.size - 1
-            value = when (unitParams.unitDrink) {
-                ML -> 0
-                OZ_UK -> 1
-                else -> 2
-            }
-            setOnValueChangedListener { _, _, newVal -> mainViewModel.setUnitDrink(unit[newVal]) }
-        }
-
         addListener()
         addObserver()
     }

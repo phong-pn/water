@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -21,6 +22,7 @@ import com.phongpn.water.util.*
 import com.phongpn.water.util.constant.params.ML
 import com.phongpn.water.util.constant.params.OZ_US
 import com.phongpn.water.util.profileparams.UnitParams
+import com.phongpn.water.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.amount_water_picker.*
 import kotlinx.android.synthetic.main.edit_log_bottom_sheet.*
 import java.util.*
@@ -41,6 +43,8 @@ class EditLogBottomSheetFragment(
     private var previousTypeSelected = 0
     private lateinit var _log: LogDrink
     private val unitParams = UnitParams.getInstance()
+
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -129,7 +133,11 @@ class EditLogBottomSheetFragment(
             }
         }
         addListenerForViews()
+        addObservers()
 
+    }
+
+    private fun addObservers() {
 
     }
 
@@ -187,16 +195,9 @@ class EditLogBottomSheetFragment(
             displayedValues = valueDisplay
             maxValue = valueDisplay.size - 1
             minValue = 0
-            val amount = when (unitParams.unitDrink) {
-                ML -> _log.amount
-                OZ_US -> _log.amount.toOz_Us(ML)
-                else -> _log.amount.toOz_Uk(ML)
-            }
-            value = valueDisplay.indexOf(amount.toString())
+            value = valueDisplay.indexOf(_log.amount.toString())
             setOnValueChangedListener { _, _, newVal ->
-                _log.amount = valueDisplay[newVal].toInt().toMl(
-                    unitParams.unitDrink
-                )
+                _log.amount = valueDisplay[newVal].toInt()
             }
         }
     }

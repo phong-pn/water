@@ -146,7 +146,7 @@
         android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="@+id/wave"
         app:layout_constraintStart_toStartOf="@+id/wave"
-        app:layout_constraintTop_toBottomOf="@+id/activity_frame">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -201,76 +201,6 @@
         app:layout_constraintEnd_toEndOf="@+id/textView9"
         app:layout_constraintStart_toStartOf="@+id/textView9"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
-
-    <FrameLayout
-        android:id="@+id/hot_day_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/selected_card_view_gradient"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <ImageView
-            android:id="@+id/icon_hot_day"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="2sp"
-            android:background="@drawable/sun_container"
-            android:scaleType="center"
-            app:srcCompat="@drawable/sun" />
-
-        <TextView
-            android:id="@+id/hot_day_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="45dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="22dp"
-            android:layout_marginBottom="12dp"
-            android:text="@string/hot_day" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/activity_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/selected_card_view_gradient"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/hot_day_frame"
-        app:layout_constraintStart_toEndOf="@+id/hot_day_frame"
-        app:layout_constraintTop_toTopOf="@+id/hot_day_frame"
-        app:layout_constraintVertical_bias="0.0">
-
-        <ImageView
-            android:id="@+id/icon_activity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="2sp"
-            android:background="@drawable/sun_container"
-            android:scaleType="center"
-            app:srcCompat="@drawable/activity" />
-
-        <TextView
-            android:id="@+id/active_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="45dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="22dp"
-            android:layout_marginBottom="12dp"
-            android:text="@string/active" />
-    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/ahihi"

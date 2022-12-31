@@ -21,7 +21,6 @@ class StatisticFragment() : BaseFragment() {
     private val logDrinkViewModel: LogDrinkViewModel by activityViewModels()
     private lateinit var logDrinkAdapter: DayLogDrinkAdapter
 
-    private val waterIntakeParams = WaterIntakeParams.getInstance()
     val unitParams = UnitParams.getInstance()
 
     override fun onCreateView(
