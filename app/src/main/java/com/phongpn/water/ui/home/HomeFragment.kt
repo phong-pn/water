@@ -223,12 +223,11 @@ class HomeFragment : BaseFragment() {
 
     private fun changeWave(state: MainFragmentUiState) {
         state.apply {
-            wave.setProgress(100 - process.toInt())
+            wave.setProgress(process.toInt())
             intake_drink_tv.text = intakePreview
             if (process < 100) {
                 enough_drink_tv.text = getString(R.string.you_have_to_drink)
-                remain_drink_tv.text = "$this ${unitParams.unitDrink}"
-                remain_drink_tv.invalidate()
+                remain_drink_tv.text = "$remainToday ${unitParams.unitDrink}"
                 ratio_drink_tv.apply {
                     text = "$process %"
                     visibility = View.VISIBLE

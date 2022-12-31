@@ -38,6 +38,7 @@ class WaterIntakeParams: BaseProfileParamsObserve(), SaveToSharePreference {
          */
         const val VERY_ACTIVE = "Very active"
 
+
         // weather instant
         const val COLD = "Cold"
         const val TEMPERATE = "Temperate"
@@ -46,6 +47,8 @@ class WaterIntakeParams: BaseProfileParamsObserve(), SaveToSharePreference {
         const val FEMALE = "FEMALE"
         const val SEDENTARY = "Sedentary"
 
+        val listPhysical = listOf(SEDENTARY, LIGHT_ACTIVITY, ACTIVE, VERY_ACTIVE)
+        val listClimate = listOf(COLD, TEMPERATE, HOT)
 
         private var instance = WaterIntakeParams()
         fun getInstance() = instance

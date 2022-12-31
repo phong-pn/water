@@ -2,6 +2,7 @@ package com.phongpn.water.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.util.constant.params.OZ_US
 import com.phongpn.water.util.profileparams.AppSetting
@@ -9,6 +10,8 @@ import com.phongpn.water.util.profileparams.UnitParams
 import com.phongpn.water.util.profileparams.WaterIntakeParams
 import com.phongpn.water.util.toLbs
 import com.phongpn.water.util.toMl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     val appSetting = MutableLiveData(AppSetting())
@@ -39,71 +42,74 @@ class MainViewModel : ViewModel() {
     fun setSex(sex: String) {
         this.sex.postValue(sex)
         SharePrefUtil.sex = sex
+        calculate()
     }
 
     val pregnant = MutableLiveData(SharePrefUtil.pregnant)
     fun setPregnant(pregnant: Boolean) {
         this.pregnant.postValue(pregnant)
         SharePrefUtil.pregnant = pregnant
+        calculate()
     }
 
     val breastfeeding = MutableLiveData(SharePrefUtil.breastfeeding)
     fun setBreastFeeding(breastfeeding: Boolean) {
         this.breastfeeding.postValue(breastfeeding)
         SharePrefUtil.breastfeeding = breastfeeding
+        calculate()
     }
 
     val weight = MutableLiveData(SharePrefUtil.weight)
     fun setWeight(weight: Int) {
         this.weight.postValue(weight)
         SharePrefUtil.weight = weight
+        calculate()
     }
 
     val activity = MutableLiveData(SharePrefUtil.activity)
     fun setActivity(activity: String) {
         this.activity.postValue(activity)
         SharePrefUtil.activity = activity
+        calculate()
     }
 
     val weather = MutableLiveData(SharePrefUtil.weather)
     fun setWeather(weather: String) {
         this.weather.postValue(weather)
         SharePrefUtil.weather = weather
+        calculate()
     }
 
-    val amount = MutableLiveData(SharePrefUtil.amount)
-    fun setAmount(amount: Int) {
-        this.amount.postValue(amount)
-        SharePrefUtil.amount = amount
+    val goal = MutableLiveData(SharePrefUtil.goal)
+    fun setGoal(amount: Int) {
+        this.goal.postValue(amount)
+        SharePrefUtil.goal = amount
     }
 
     private fun calculate() {
-        waterIntakeParams.value?.apply {
-            var amount = 0
-            amount = weight.toLbs(UnitParams.getInstance().unitWeight) / 2
-            amount = amount.toMl(OZ_US)
-            //round amount, like 2190 ->2200 or 2102 -> 2100
-            amount.apply {
-                var a = amount / 100
-                if (amount % 100 >= 50) a++
-                amount = a * 100
-            }
-            if (sex == WaterIntakeParams.FEMALE) {
-                amount -= 100
-                if (pregnant == true) amount += 600
-                if (breastfeeding == true) amount += 800
-            }
-            when (activity) {
-                WaterIntakeParams.LIGHT_ACTIVITY -> amount += 100
-                WaterIntakeParams.ACTIVE -> amount += 400
-                WaterIntakeParams.VERY_ACTIVE -> amount += 800
-            }
-            when (weather) {
-                WaterIntakeParams.TEMPERATE -> amount += 300
-                WaterIntakeParams.HOT -> amount += 700
-            }
-            this.amount = amount
-            setAmount(amount)
+        var goal = 0
+        goal = SharePrefUtil.weight.toLbs(unitWeight.value!!) / 2
+        goal = goal.toMl(OZ_US)
+        //round amount, like 2190 ->2200 or 2102 -> 2100
+        goal.apply {
+            var a = goal / 100
+            if (goal % 100 >= 50) a++
+            goal = a * 100
         }
+        if (SharePrefUtil.sex == WaterIntakeParams.FEMALE) {
+            goal -= 100
+            if (SharePrefUtil.pregnant) goal += 600
+            if (SharePrefUtil.breastfeeding) goal += 800
+        }
+        when (SharePrefUtil.activity) {
+            WaterIntakeParams.LIGHT_ACTIVITY -> goal += 100
+            WaterIntakeParams.ACTIVE -> goal += 400
+            WaterIntakeParams.VERY_ACTIVE -> goal += 800
+        }
+        when (SharePrefUtil.weather) {
+            WaterIntakeParams.TEMPERATE -> goal += 300
+            WaterIntakeParams.HOT -> goal += 700
+        }
+        setGoal(goal)
     }
 }

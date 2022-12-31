@@ -46,7 +46,7 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
 
     fun changeTotalDrinkToday(newTotal: Int) {
         mainFragmentUiState.postValue {
-            totalDrinkToday = newTotal
+            currentTotalDrinkToday = newTotal
         }
     }
 
@@ -95,10 +95,13 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
 class MainFragmentUiState(
     var unitDrink: String = SharePrefUtil.unitDrink,
     var currentTotalDrinkToday: Int,
-    var totalDrinkToday: Int = SharePrefUtil.amount
+    var goalToday: Int = SharePrefUtil.goal
 ) {
+    val remainToday
+        get() = goalToday - currentTotalDrinkToday
+
     val process: Float
-        get() = (currentTotalDrinkToday / totalDrinkToday.toFloat()) * 100
+        get() = (currentTotalDrinkToday / goalToday.toFloat()) * 100
 
     val intakePreview: String
         get()  {
@@ -108,9 +111,9 @@ class MainFragmentUiState(
                 else -> currentTotalDrinkToday
             }
             val mTotal = when(unitDrink) {
-                OZ_US -> totalDrinkToday.toOz_Us(ML)
-                OZ_UK -> totalDrinkToday.toOz_Uk(ML)
-                else -> totalDrinkToday
+                OZ_US -> goalToday.toOz_Us(ML)
+                OZ_UK -> goalToday.toOz_Uk(ML)
+                else -> goalToday
             }
             return "$mCurrent $unitDrink / $mTotal $unitDrink "
         }

@@ -2,10 +2,8 @@ package com.phongpn.water.storage
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
 import com.phongpn.water.util.constant.params.KG
 import com.phongpn.water.util.constant.params.ML
-import com.phongpn.water.util.profileparams.AppSetting
 import com.phongpn.water.util.profileparams.WaterIntakeParams
 
 object SharePrefUtil {
@@ -68,9 +66,9 @@ object SharePrefUtil {
             sharedPreferences.edit().putString("weather", value).apply()
         }
 
-    var amount: Int
-        get() = sharedPreferences.getInt("amount", 2000)
+    var goal: Int
+        get() = sharedPreferences.getInt("goal", 2000)
         set(value) {
-            sharedPreferences.edit().putInt("amount", value).apply()
+            sharedPreferences.edit().putInt("goal", value).apply()
         }
 }
