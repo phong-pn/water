@@ -13,12 +13,12 @@ import android.view.*
 import androidx.core.app.NotificationManagerCompat
 import com.phongpn.water.R
 import com.phongpn.water.notification.AlarmSchedule
+import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.ui.dialog.*
 import com.phongpn.water.ui.dialog.base.BaseBottomSheetDialogFragment
 import com.phongpn.water.ui.dialog.base.BaseBodyDialog
 import com.phongpn.water.ui.greetings.changeColorCheckBox
 import com.phongpn.water.util.formatTime
-import com.phongpn.water.util.profileparams.AppSetting
 import kotlinx.android.synthetic.main.notification_fragment.*
 import java.util.*
 
@@ -30,7 +30,7 @@ class NotificationFragment(title: String) : BaseDetailProfileFragment(title) {
         set(value) {
             field = value
             if (value){
-                if (!AppSetting.getInstance().firstLaunch) save_change_alarm.visibility = View.VISIBLE
+                if (!SharePrefUtil.firstLaunch) save_change_alarm.visibility = View.VISIBLE
             }
         }
     override fun onCreateView(
@@ -289,7 +289,7 @@ class NotificationFragment(title: String) : BaseDetailProfileFragment(title) {
             }
             initBody()
         }
-        if (!areNotificationEnable() && !AppSetting.getInstance().firstLaunch){
+        if (!areNotificationEnable()){
             BaseBottomSheetDialogFragment(getString(R.string.notification), this).also {
                 it.onDialogShow = {
                     it.confirmMessenger(getString(R.string.enable))

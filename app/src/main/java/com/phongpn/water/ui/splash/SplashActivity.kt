@@ -5,17 +5,12 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.animation.AnimationUtils
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.splashscreen.SplashScreenViewProvider
-import androidx.lifecycle.lifecycleScope
 import com.phongpn.water.R
+import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.ui.MainActivity
 import com.phongpn.water.ui.greetings.GreetingActivity
-import com.phongpn.water.util.profileparams.AppSetting
 import kotlinx.android.synthetic.main.activity_splash.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +31,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
     private fun continueApp(){
-        if (AppSetting.getInstance().firstLaunch) {
+        if (SharePrefUtil.firstLaunch) {
             startActivity(Intent(this@SplashActivity, GreetingActivity::class.java))
         }
         else {

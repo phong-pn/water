@@ -14,10 +14,16 @@ object SharePrefUtil {
         sharedPreferences = context.getSharedPreferences("drink_water", Context.MODE_PRIVATE)
     }
 
+    var firstLaunch: Boolean
+        get() = sharedPreferences.getBoolean("first_launch", true)
+        set(value) {
+            sharedPreferences.edit().putBoolean("first_launch", value).apply()
+        }
+
     var sound: Boolean
         get() = sharedPreferences.getBoolean("sound", true)
         set(value) {
-            sharedPreferences.edit().putBoolean("app_setting", sound).apply()
+            sharedPreferences.edit().putBoolean("app_setting", value).apply()
         }
 
     var unitDrink: String

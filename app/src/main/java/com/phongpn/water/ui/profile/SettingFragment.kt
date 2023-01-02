@@ -12,7 +12,6 @@ import com.opencsv.CSVWriter
 import com.phongpn.water.R
 import com.phongpn.water.entity.LogDrink
 import com.phongpn.water.ui.dialog.base.BasePaddingBottomSheetDialogFragment
-import com.phongpn.water.util.profileparams.AppSetting
 import com.phongpn.water.viewmodel.LogDrinkViewModel
 import com.phongpn.water.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.clear_all_data_dialog.*
@@ -22,7 +21,6 @@ import java.io.FileWriter
 
 class SettingFragment(title: String) : BaseDetailProfileFragment(title) {
     private val logDrinkViewModel: LogDrinkViewModel by activityViewModels()
-    private val appSetting = AppSetting.getInstance()
     private val mainViewModel by activityViewModels<MainViewModel>()
     private lateinit var listLog: List<LogDrink>
     override fun onCreateView(

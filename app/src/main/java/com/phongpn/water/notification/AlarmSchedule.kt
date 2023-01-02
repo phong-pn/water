@@ -6,7 +6,6 @@ import android.widget.Toast
 import com.phongpn.water.R
 import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.util.formatTime
-import com.phongpn.water.util.profileparams.BaseProfileParamsObserve
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +32,7 @@ data class AlarmSchedule constructor(
     var sound: String = SOUND_DEFAULT,
     var vibrate: Boolean = true,
     var active: Boolean = true
-) : Parcelable, BaseProfileParamsObserve() {
+) : Parcelable {
     @Transient
     var onNextAlarmChanged: ((nextAlarm: Alarm) -> Unit)? = null
     fun changeNextAlarm() {

@@ -10,8 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.phongpn.water.R
+import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.ui.MainActivity
-import com.phongpn.water.util.profileparams.AppSetting
 import kotlinx.android.synthetic.main.main_greeting_fragment.*
 
 class MainGreetingFragment : Fragment() {
@@ -37,7 +37,7 @@ class MainGreetingFragment : Fragment() {
             greeting_fragment_viewpager2.apply {
                 if (currentItem != fragments.size - 1) setCurrentItem(currentItem + 1, true)
                 else {
-                    AppSetting.getInstance().firstLaunch = false
+                    SharePrefUtil.firstLaunch = false
                     (fragments[currentItem] as SetupNotificationFragment).schedule()
                     requireActivity().apply {
                         startActivity(Intent(this, MainActivity::class.java))
