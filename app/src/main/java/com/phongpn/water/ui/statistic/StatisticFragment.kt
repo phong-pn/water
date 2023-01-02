@@ -12,16 +12,12 @@ import com.phongpn.water.entity.LogDrink
 import com.phongpn.water.ui.MainActivity
 import com.phongpn.water.ui.base.BaseFragment
 import com.phongpn.water.ui.dialog.EditLogBottomSheetFragment
-import com.phongpn.water.util.profileparams.UnitParams
-import com.phongpn.water.util.profileparams.WaterIntakeParams
 import com.phongpn.water.viewmodel.LogDrinkViewModel
 import kotlinx.android.synthetic.main.fragment_statistic.*
 
 class StatisticFragment() : BaseFragment() {
     private val logDrinkViewModel: LogDrinkViewModel by activityViewModels()
     private lateinit var logDrinkAdapter: DayLogDrinkAdapter
-
-    val unitParams = UnitParams.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

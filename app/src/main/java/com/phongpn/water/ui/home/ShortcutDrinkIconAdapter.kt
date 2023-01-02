@@ -3,33 +3,25 @@ package com.phongpn.water.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.*
+import android.view.animation.AlphaAnimation
+import android.view.animation.AnimationSet
+import android.view.animation.TranslateAnimation
 import android.widget.ImageView
 import com.phongpn.water.R
 import com.phongpn.water.adapter.ListDrinkIconAdapter
-import com.phongpn.water.util.constant.params.ML
-import com.phongpn.water.util.formatDrinkUnit
-import com.phongpn.water.util.profileparams.UnitParams
 import kotlinx.android.synthetic.main.drink_icon_main_fragment_viewholder_layout.view.*
 
 class ShortcutDrinkIconAdapter(
     listData: List<DrinkIconData>,
     onCLickItemView: ((Int) -> Unit)?
 ) : ListDrinkIconAdapter(listData, onCLickItemView) {
-    private val unitParams = UnitParams.getInstance()
 
-    inner class IconViewHolder(itemView: View) : DrinkIconViewHolder(itemView){
+    inner class IconViewHolder(itemView: View) : DrinkIconViewHolder(itemView) {
         override fun bindData(data: DrinkIconData, pos: Int) {
             super.bindData(data, pos)
             itemView.apply {
-                unitParams.observe { type, unit ->
-                    if (type == UnitParams.UNIT_DRINK) {
-                        unit as String
-                        data.detail = formatDrinkUnit(data.amount, ML)
-                        detail_drink_icon_tv.text = data.detail
-                    }
-                }
-                data.detail = formatDrinkUnit(data.amount, ML)
+                detail_drink_icon_tv.text = data.detail
+                data.detail = "${data.amount} ml"
                 detail_drink_icon_tv.text = data.detail
                 setOnClickListener {
                     onCLickItemView?.invoke(pos)
@@ -40,19 +32,20 @@ class ShortcutDrinkIconAdapter(
                         setImageDrawable(drawable)
                         scaleType = ImageView.ScaleType.CENTER
                         this.background = background
-                        var translateAnimation : TranslateAnimation
+                        var translateAnimation: TranslateAnimation
                         resources.displayMetrics.apply {
-                            var location = intArrayOf(1,1)
+                            var location = intArrayOf(1, 1)
                             getLocationOnScreen(location)
                             translateAnimation = TranslateAnimation(
                                 0f,
-                                (widthPixels/2).toFloat() -  location[0].toFloat(),
+                                (widthPixels / 2).toFloat() - location[0].toFloat(),
                                 0f,
-                                (heightPixels/3).toFloat() - location[1].toFloat() )
+                                (heightPixels / 3).toFloat() - location[1].toFloat()
+                            )
 
                         }
                         val animationSet = AnimationSet(true).apply {
-                            addAnimation(AlphaAnimation(1f,0f))
+                            addAnimation(AlphaAnimation(1f, 0f))
                             addAnimation(translateAnimation)
                             duration = 1500
                         }
@@ -65,6 +58,9 @@ class ShortcutDrinkIconAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrinkIconViewHolder= IconViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.drink_icon_main_fragment_viewholder_layout, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrinkIconViewHolder =
+        IconViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.drink_icon_main_fragment_viewholder_layout, parent, false)
+        )
 }

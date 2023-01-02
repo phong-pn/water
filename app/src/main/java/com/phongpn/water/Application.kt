@@ -13,7 +13,6 @@ import com.phongpn.water.util.CHANNEL_ID
 class Application : Application() {
     override fun onCreate() {
         super.onCreate()
-        Pref.getData(this)
         SharePrefUtil.init(this)
         LogDrinkRepo.initDao(this)
         createNotificationChannel()

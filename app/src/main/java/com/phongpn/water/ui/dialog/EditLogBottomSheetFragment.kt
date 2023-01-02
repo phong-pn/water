@@ -18,10 +18,9 @@ import com.phongpn.water.adapter.ListDrinkIconAdapter.DrinkIconData
 import com.phongpn.water.entity.LogDrink
 import com.phongpn.water.ui.dialog.base.BaseBottomSheetDialogFragment
 import com.phongpn.water.ui.dialog.base.Modifier
-import com.phongpn.water.util.*
-import com.phongpn.water.util.constant.params.ML
-import com.phongpn.water.util.constant.params.OZ_US
-import com.phongpn.water.util.profileparams.UnitParams
+import com.phongpn.water.util.Drink
+import com.phongpn.water.util.formatDate
+import com.phongpn.water.util.formatTime
 import com.phongpn.water.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.amount_water_picker.*
 import kotlinx.android.synthetic.main.edit_log_bottom_sheet.*
@@ -42,7 +41,6 @@ class EditLogBottomSheetFragment(
     private var update: ((LogDrink) -> Unit)? = null
     private var previousTypeSelected = 0
     private lateinit var _log: LogDrink
-    private val unitParams = UnitParams.getInstance()
 
     private val mainViewModel by activityViewModels<MainViewModel>()
 
@@ -179,19 +177,9 @@ class EditLogBottomSheetFragment(
             typeface = Typeface.DEFAULT_BOLD
             setSelectedTypeface(typeface)
             var valueDisplay = arrayOf<String>()
-            when (unitParams.unitDrink) {
-                ML -> {
-                    for (i in 10..5000 step 10) {
-                        valueDisplay += i.toString()
-                    }
-                }
-                else -> {
-                    for (i in 1..178) {
-                        valueDisplay += i.toString()
-                    }
-                }
+            for (i in 10..5000 step 10) {
+                valueDisplay += i.toString()
             }
-            unit_picker.text = unitParams.unitDrink
             displayedValues = valueDisplay
             maxValue = valueDisplay.size - 1
             minValue = 0

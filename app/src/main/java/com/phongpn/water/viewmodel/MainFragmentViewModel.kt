@@ -18,11 +18,6 @@ import com.phongpn.water.util.toOz_Us
 import java.util.*
 
 class MainFragmentViewModel(application: Application) : AndroidViewModel(application) {
-    val totalDrinkToday = MutableLiveData<Int>()
-    val currentTotalDrinkToday = MutableLiveData<Int>()
-    val unitDrink = MutableLiveData<String>()
-    val isHotDay = MutableLiveData(false)
-    val isActivateDay = MutableLiveData(false)
     var shortcutIcon = MutableLiveData(arrayListOf<DrinkIconData>())
 
     var mainFragmentUiState: MutableLiveData<MainFragmentUiState>
@@ -36,12 +31,6 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
                 )
             )
         )
-    }
-
-    fun changeUnitDrink() {
-        mainFragmentUiState.postValue {
-            unitDrink = SharePrefUtil.unitDrink
-        }
     }
 
     fun changeTotalDrinkToday(newTotal: Int) {
@@ -75,11 +64,10 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
 
     private fun getShortcutIcon() {
         val type = object : TypeToken<ArrayList<DrinkIconData>>() {}.type
-        val listShortcutIcon =
-            getApplication<Application>().getSharedPreferences("shortcut", Context.MODE_PRIVATE)
-                .getString("shortcut", null)
-                ?.let { Gson().fromJson<ArrayList<DrinkIconData>>(it, type) }
-                ?.let { shortcutIcon.postValue(it) }
+        getApplication<Application>().getSharedPreferences("shortcut", Context.MODE_PRIVATE)
+            .getString("shortcut", null)
+            ?.let { Gson().fromJson<ArrayList<DrinkIconData>>(it, type) }
+            ?.let { shortcutIcon.postValue(it) }
 
     }
 
@@ -90,10 +78,15 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
                 apply()
             }
     }
+
+    fun changeGoal(newGoal: Int) {
+        mainFragmentUiState.postValue {
+            goalToday = newGoal
+        }
+    }
 }
 
 class MainFragmentUiState(
-    var unitDrink: String = SharePrefUtil.unitDrink,
     var currentTotalDrinkToday: Int,
     var goalToday: Int = SharePrefUtil.goal
 ) {
@@ -105,17 +98,9 @@ class MainFragmentUiState(
 
     val intakePreview: String
         get()  {
-            val mCurrent = when(unitDrink){
-                OZ_US -> currentTotalDrinkToday.toOz_Us(ML)
-                OZ_UK -> currentTotalDrinkToday.toOz_Uk(ML)
-                else -> currentTotalDrinkToday
-            }
-            val mTotal = when(unitDrink) {
-                OZ_US -> goalToday.toOz_Us(ML)
-                OZ_UK -> goalToday.toOz_Uk(ML)
-                else -> goalToday
-            }
-            return "$mCurrent $unitDrink / $mTotal $unitDrink "
+            val mCurrent = currentTotalDrinkToday
+            val mTotal = goalToday
+            return "$mCurrent ml / $mTotal ml "
         }
 }
 

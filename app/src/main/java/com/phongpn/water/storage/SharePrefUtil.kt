@@ -2,6 +2,8 @@ package com.phongpn.water.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.phongpn.water.notification.AlarmSchedule
 import com.phongpn.water.util.constant.params.KG
 import com.phongpn.water.util.constant.params.ML
 import com.phongpn.water.util.profileparams.WaterIntakeParams
@@ -70,5 +72,16 @@ object SharePrefUtil {
         get() = sharedPreferences.getInt("goal", 2000)
         set(value) {
             sharedPreferences.edit().putInt("goal", value).apply()
+        }
+
+    var alarmSchedule: AlarmSchedule
+        get() {
+            val json = sharedPreferences.getString("alarm", "")
+            return if (!json.isNullOrBlank()) Gson().fromJson(json, AlarmSchedule::class.java)
+            else AlarmSchedule()
+        }
+        set(value) {
+            val alarmJson = Gson().toJson(AlarmSchedule.get())
+            sharedPreferences.edit().putString("alarm", alarmJson).apply()
         }
 }

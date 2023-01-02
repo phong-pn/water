@@ -11,8 +11,9 @@ import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.ui.dialog.SelectedBottomSheetFragment
 import com.phongpn.water.ui.dialog.base.BaseBottomSheetDialogFragment
 import com.phongpn.water.ui.greetings.changeColorCheckBox
-import com.phongpn.water.util.constant.params.*
-import com.phongpn.water.util.profileparams.UnitParams
+import com.phongpn.water.util.constant.params.KG
+import com.phongpn.water.util.constant.params.LBS
+import com.phongpn.water.util.constant.params.ML
 import com.phongpn.water.util.profileparams.WaterIntakeParams
 import com.phongpn.water.util.profileparams.WaterIntakeParams.Companion.ACTIVE
 import com.phongpn.water.util.profileparams.WaterIntakeParams.Companion.COLD
@@ -34,8 +35,6 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title) {
     private val listDetailPhysicalActivity = mutableListOf<String?>()
     private val listClimate = mutableListOf<String>()
     private val listDetailClimate = mutableListOf<String?>()
-    private val unitParams = UnitParams.getInstance()
-    private val waterIntakeParams = WaterIntakeParams.getInstance()
     private val mainViewModel by activityViewModels<MainViewModel>()
 
 
@@ -71,10 +70,7 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (waterIntakeParams.sex == WaterIntakeParams.MALE) {
-            changeColorCheckBox(male_cv, male_tv, male_cb, true)
 
-        } else changeColorCheckBox(female_cv, female_tv, female_cb, true)
         unit_weight_picker.apply {
             typeface = typefaceBold
             setSelectedTypeface(typefaceBold)
@@ -82,7 +78,7 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title) {
             displayedValues = unit
             minValue = 0
             maxValue = 1
-            value = when (unitParams.unitWeight) {
+            value = when (SharePrefUtil.unitWeight) {
                 KG -> 0
                 else -> 1
             }
@@ -134,6 +130,13 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title) {
                     else -> getString(R.string.hot)
                 }
             }
+
+            sex.observe(viewLifecycleOwner) { sex ->
+                if (sex == WaterIntakeParams.MALE) {
+                    changeColorCheckBox(male_cv, male_tv, male_cb, true)
+
+                } else changeColorCheckBox(female_cv, female_tv, female_cb, true)
+            }
         }
     }
 
@@ -163,133 +166,88 @@ class WaterIntakeFragment(title: String) : BaseDetailProfileFragment(title) {
         val MAX_OZ_US = MAX_ML.toOz_Us(ML)
         amount_drink_picker.apply {
             try {
-                when (SharePrefUtil.unitDrink) {
-                    ML -> {
-                        var display = arrayOf<String>()
-                        maxValue = 1
-                        for (index in minValue * 100 until MAX_ML step 100) display =
-                            display.plus(index.toString())
-                        displayedValues = display
-                        minValue = 0
-                        maxValue = display.size - 1
-                        value = display.indexOf(SharePrefUtil.goal.toMl(ML).toString())
-                        setOnValueChangedListener { _, _, newVal ->
-                            waterIntakeParams.amount = display[newVal].toInt()
-                        }
-                    }
-                    OZ_UK -> {
-                        displayedValues = null
-                        minValue = 1
-                        maxValue = MAX_OZ_UK
-                        value = SharePrefUtil.goal.toOz_Uk(ML)
-                        setOnValueChangedListener { _, _, newVal ->
-                            waterIntakeParams.amount = newVal.toMl(
-                                OZ_UK
-                            )
-                        }
-                    }
-                    OZ_US -> {
-                        displayedValues = null
-                        minValue = 1
-                        maxValue = MAX_OZ_US
-                        value = SharePrefUtil.goal.toOz_Us(ML)
-                        setOnValueChangedListener { _, _, newVal ->
-                            waterIntakeParams.amount = newVal.toMl(
-                                OZ_US
-                            )
-                        }
-                    }
+                var display = arrayOf<String>()
+                maxValue = 1
+                for (index in minValue * 100 until MAX_ML step 100) display =
+                    display.plus(index.toString())
+                displayedValues = display
+                minValue = 0
+                maxValue = display.size - 1
+                value = display.indexOf(SharePrefUtil.goal.toMl(ML).toString())
+                setOnValueChangedListener { _, _, newVal ->
+                    mainViewModel.setGoal(display[newVal].toInt())
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-
         }
     }
 
     private fun addListener() {
         male_cv.setOnClickListener {
-            changeColorCheckBox(male_cv, male_tv, male_cb, true)
-            changeColorCheckBox(female_cv, female_tv, female_cb, false)
             mainViewModel.setSex(WaterIntakeParams.MALE)
         }
         female_cv.setOnClickListener {
-            changeColorCheckBox(male_cv, male_tv, male_cb, false)
-            changeColorCheckBox(female_cv, female_tv, female_cb, true)
             mainViewModel.setSex(WaterIntakeParams.FEMALE)
         }
         weight_picker.setOnValueChangedListener { picker, oldVal, newVal ->
             mainViewModel.setWeight(newVal)
         }
-        waterIntakeParams.apply {
-            physical_activity_bt.apply {
-//                text = when(activity){
-//                    SEDENTARY -> listPhysicalActivity[0]
-//                    LIGHT_ACTIVITY -> listPhysicalActivity[1]
-//                    ACTIVE -> listPhysicalActivity[2]
-//                    else -> listPhysicalActivity[3]
-//                }
-                setOnClickListener {
-                    BaseBottomSheetDialogFragment(
-                        getString(R.string.choose_activity),
-                        this@WaterIntakeFragment
-                    ).run {
-                        onDialogShow = {
-                            setContentView(
-                                SelectedBottomSheetFragment(
-                                    listPhysicalActivity,
-                                    listDetailPhysicalActivity,
-                                    when (mainViewModel.activity.value) {
-                                        SEDENTARY -> 0
-                                        LIGHT_ACTIVITY -> 1
-                                        ACTIVE -> 2
-                                        else -> 3
-                                    },
-                                    this
-                                ).apply {
-                                    confirm = {
-                                        mainViewModel.setActivity(WaterIntakeParams.listPhysical[it])
-                                    }
+        physical_activity_bt.apply {
+            setOnClickListener {
+                BaseBottomSheetDialogFragment(
+                    getString(R.string.choose_activity),
+                    this@WaterIntakeFragment
+                ).run {
+                    onDialogShow = {
+                        setContentView(
+                            SelectedBottomSheetFragment(
+                                listPhysicalActivity,
+                                listDetailPhysicalActivity,
+                                when (mainViewModel.activity.value) {
+                                    SEDENTARY -> 0
+                                    LIGHT_ACTIVITY -> 1
+                                    ACTIVE -> 2
+                                    else -> 3
+                                },
+                                this
+                            ).apply {
+                                confirm = {
+                                    mainViewModel.setActivity(WaterIntakeParams.listPhysical[it])
                                 }
-                            )
-                        }
-                        show()
+                            }
+                        )
                     }
-
+                    show()
                 }
+
             }
-            climate_bt.apply {
-//                text = when (weather) {
-//                    COLD -> listClimate[0]
-//                    TEMPERATE -> listClimate[1]
-//                    else -> listClimate[2]
-//                }
-                setOnClickListener {
-                    BaseBottomSheetDialogFragment(
-                        getString(R.string.choose_climate),
-                        this@WaterIntakeFragment
-                    ).run {
-                        onDialogShow = {
-                            setContentView(
-                                SelectedBottomSheetFragment(
-                                    listClimate,
-                                    listDetailClimate,
-                                    when (mainViewModel.weather.value) {
-                                        COLD -> 0
-                                        TEMPERATE -> 1
-                                        else -> 2
-                                    },
-                                    this
-                                ).apply {
-                                    confirm = {
-                                        mainViewModel.setWeather(WaterIntakeParams.listClimate[it])
-                                    }
+        }
+        climate_bt.apply {
+            setOnClickListener {
+                BaseBottomSheetDialogFragment(
+                    getString(R.string.choose_climate),
+                    this@WaterIntakeFragment
+                ).run {
+                    onDialogShow = {
+                        setContentView(
+                            SelectedBottomSheetFragment(
+                                listClimate,
+                                listDetailClimate,
+                                when (mainViewModel.weather.value) {
+                                    COLD -> 0
+                                    TEMPERATE -> 1
+                                    else -> 2
+                                },
+                                this
+                            ).apply {
+                                confirm = {
+                                    mainViewModel.setWeather(WaterIntakeParams.listClimate[it])
                                 }
-                            )
-                        }
-                        show()
+                            }
+                        )
                     }
+                    show()
                 }
             }
         }

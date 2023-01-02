@@ -12,16 +12,12 @@ import com.phongpn.water.ui.base.BaseFragment
 import com.phongpn.water.ui.dialog.base.Modifier
 import com.phongpn.water.ui.dialog.showExitDialogFragment
 import com.phongpn.water.ui.home.HomeFragment
-import com.phongpn.water.util.profileparams.AppSetting
-import com.phongpn.water.util.profileparams.UnitParams
-import com.phongpn.water.util.profileparams.WaterIntakeParams
 
 class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         container = R.id.activity_main
-        AppSetting.getInstance().launch++
         supportFragmentManager.beginTransaction()
             .replace(container, HomeFragment::class.java, null)
             .commit()
@@ -54,14 +50,10 @@ class MainActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
-        Pref.save(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        AppSetting.getInstance().detachObservers()
-        UnitParams.getInstance().detachObservers()
-        WaterIntakeParams.getInstance().detachObservers()
         AlarmSchedule.get().detachObservers()
     }
 }

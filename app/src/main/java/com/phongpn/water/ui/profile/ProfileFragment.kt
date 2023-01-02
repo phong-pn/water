@@ -5,24 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import com.phongpn.water.R
 import com.phongpn.water.ui.MainActivity
 import com.phongpn.water.ui.base.BaseFragment
-import com.phongpn.water.util.constant.params.ML
-import com.phongpn.water.util.constant.params.OZ_UK
-import com.phongpn.water.util.constant.params.OZ_US
-import com.phongpn.water.util.formatDrinkUnit
-import com.phongpn.water.util.profileparams.UnitParams
 import com.phongpn.water.util.profileparams.WaterIntakeParams
-import com.phongpn.water.util.widget.GradientBackgroundTextView
-import kotlinx.android.synthetic.main.expand_unit_layout.*
+import com.phongpn.water.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.profile_fragment.*
 
 class ProfileFragment : BaseFragment() {
     var canBackToMainFragment = true
     private var detailProfileFragment: BaseDetailProfileFragment? = null
-    private val unitParams = UnitParams.getInstance()
-    private val waterIntakeParams = WaterIntakeParams.getInstance()
+    private val mainViewModel by activityViewModels<MainViewModel>()
     override fun onBackPressed() {
         if (canBackToMainFragment) {
             (requireActivity() as MainActivity).toHomeFragment {
@@ -44,6 +38,19 @@ class ProfileFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        addListener()
+        addObserver()
+
+
+    }
+
+    private fun addObserver() {
+        mainViewModel.goal.observe(viewLifecycleOwner) {
+            water_intake_amount_tv.text = "$it ml"
+        }
+    }
+
+    private fun addListener() {
         back_bt.setOnClickListener { onBackPressed() }
         water_intake_frame.setOnClickListener {
             goToDetailProfileFragment(WaterIntakeFragment(getString(R.string.my_daily_water_intake)))
@@ -66,11 +73,6 @@ class ProfileFragment : BaseFragment() {
         }
         privacy_policy_frame.setOnClickListener {
             Toast.makeText(context, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
-        }
-        water_intake_amount_tv.text = formatDrinkUnit(waterIntakeParams.amount, ML)
-        waterIntakeParams.observe { type, _ ->
-            if (type == WaterIntakeParams.AMOUNT)
-                water_intake_amount_tv.text = formatDrinkUnit(waterIntakeParams.amount, ML)
         }
     }
 

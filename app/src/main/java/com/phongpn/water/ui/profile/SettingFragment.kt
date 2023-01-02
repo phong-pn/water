@@ -14,15 +14,17 @@ import com.phongpn.water.entity.LogDrink
 import com.phongpn.water.ui.dialog.base.BasePaddingBottomSheetDialogFragment
 import com.phongpn.water.util.profileparams.AppSetting
 import com.phongpn.water.viewmodel.LogDrinkViewModel
+import com.phongpn.water.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.clear_all_data_dialog.*
 import kotlinx.android.synthetic.main.setting_fragment.*
 import java.io.File
 import java.io.FileWriter
 
 class SettingFragment(title: String) : BaseDetailProfileFragment(title) {
-    private val logDrinkViewModel : LogDrinkViewModel by activityViewModels()
+    private val logDrinkViewModel: LogDrinkViewModel by activityViewModels()
     private val appSetting = AppSetting.getInstance()
-    private lateinit var listLog : List<LogDrink>
+    private val mainViewModel by activityViewModels<MainViewModel>()
+    private lateinit var listLog: List<LogDrink>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,16 +36,8 @@ class SettingFragment(title: String) : BaseDetailProfileFragment(title) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logDrinkViewModel.allLog.observe(viewLifecycleOwner) {
-            listLog = it
-        }
-        sound_frame.apply {
-            if (!appSetting.sound) sound_iv.setImageResource(R.drawable.icon_mute)
-            setOnClickListener {
-                appSetting.sound = !appSetting.sound
-                if (!appSetting.sound) sound_iv.setImageResource(R.drawable.icon_mute)
-                else sound_iv.setImageResource(R.drawable.icon_volume)
-            }
+        sound_frame.setOnClickListener {
+            mainViewModel.setSound(!mainViewModel.sound.value!!)
         }
 
         clear_all_data_frame.setOnClickListener {
@@ -53,25 +47,47 @@ class SettingFragment(title: String) : BaseDetailProfileFragment(title) {
         export_data_frame.setOnClickListener {
             val csvFile = File.createTempFile("water", ".csv")
             val writer = FileWriter(csvFile)
-            var csvWriter =    CSVWriter(writer)
+            var csvWriter = CSVWriter(writer)
             listLog.forEach {
-                    csvWriter.writeNext(arrayOf(it.cal.time.toString(), it.type, it.amount.toString()))
+                csvWriter.writeNext(arrayOf(it.cal.time.toString(), it.type, it.amount.toString()))
             }
             writer.close()
             csvWriter.close()
             startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                 type = "text/*"
                 putExtra(Intent.EXTRA_TEXT, csvFile.name)
-                putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context!!, "${context!!.applicationContext.packageName}.provider",csvFile))
+                putExtra(
+                    Intent.EXTRA_STREAM,
+                    FileProvider.getUriForFile(
+                        context!!,
+                        "${context!!.applicationContext.packageName}.provider",
+                        csvFile
+                    )
+                )
             }, null))
         }
         about_frame.setOnClickListener {
             Toast.makeText(context, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
         }
+        addObservers()
+    }
+
+    private fun addObservers() {
+        mainViewModel.sound.observe(viewLifecycleOwner) { turnOnSound ->
+            if (turnOnSound) {
+                sound_iv.setImageResource(R.drawable.icon_volume)
+            } else {
+                sound_iv.setImageResource(R.drawable.icon_mute)
+            }
+        }
+        logDrinkViewModel.allLog.observe(viewLifecycleOwner) {
+            listLog = it
+        }
     }
 }
-class ClearAllDataDialog : BasePaddingBottomSheetDialogFragment(){
-    private val logDrinkViewModel : LogDrinkViewModel by activityViewModels()
+
+class ClearAllDataDialog : BasePaddingBottomSheetDialogFragment() {
+    private val logDrinkViewModel: LogDrinkViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,7 +103,8 @@ class ClearAllDataDialog : BasePaddingBottomSheetDialogFragment(){
         delete_bt.setOnClickListener {
             logDrinkViewModel.deleteALlLogs()
             dismiss()
-            Toast.makeText(context, getString(R.string.all_data_was_removed), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.all_data_was_removed), Toast.LENGTH_SHORT)
+                .show()
         }
     }
 }

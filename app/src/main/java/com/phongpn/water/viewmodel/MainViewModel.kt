@@ -2,41 +2,36 @@ package com.phongpn.water.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.phongpn.water.notification.Alarm
+import com.phongpn.water.notification.AlarmSchedule
 import com.phongpn.water.storage.SharePrefUtil
 import com.phongpn.water.util.constant.params.OZ_US
-import com.phongpn.water.util.profileparams.AppSetting
-import com.phongpn.water.util.profileparams.UnitParams
 import com.phongpn.water.util.profileparams.WaterIntakeParams
 import com.phongpn.water.util.toLbs
 import com.phongpn.water.util.toMl
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    val appSetting = MutableLiveData(AppSetting())
 
+    var nextAlarmFire: MutableLiveData<Alarm> = MutableLiveData(AlarmSchedule.get().getNextAlarm())
+
+    init {
+        AlarmSchedule.get().onNextAlarmChanged = {
+            nextAlarmFire.postValue(it)
+        }
+    }
     val sound = MutableLiveData(SharePrefUtil.sound)
     fun setSound(sound: Boolean) {
         this.sound.postValue(sound)
         SharePrefUtil.sound = sound
     }
 
-    val unitParams = MutableLiveData(UnitParams())
-
     val unitDrink = MutableLiveData(SharePrefUtil.unitDrink)
-    fun setUnitDrink(unit: String) {
-        this.unitDrink.postValue(unit)
-        SharePrefUtil.unitDrink = unit
-    }
 
     val unitWeight = MutableLiveData(SharePrefUtil.unitWeight)
     fun setUnitWeight(unit: String) {
         this.unitWeight.postValue(unit)
         SharePrefUtil.unitWeight = unit
     }
-
-    val waterIntakeParams = MutableLiveData(WaterIntakeParams())
 
     val sex = MutableLiveData(SharePrefUtil.sex)
     fun setSex(sex: String) {
@@ -112,4 +107,5 @@ class MainViewModel : ViewModel() {
         }
         setGoal(goal)
     }
+
 }

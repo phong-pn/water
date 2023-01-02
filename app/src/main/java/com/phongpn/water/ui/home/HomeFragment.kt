@@ -1,16 +1,11 @@
 package com.phongpn.water.ui.home
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
 import android.os.Bundle
 import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -26,12 +21,8 @@ import com.phongpn.water.ui.base.BaseFragment
 import com.phongpn.water.ui.dialog.EditLogBottomSheetFragment
 import com.phongpn.water.ui.profile.ProfileFragment
 import com.phongpn.water.ui.statistic.StatisticFragment
-import com.phongpn.water.util.*
-import com.phongpn.water.util.constant.params.ML
-import com.phongpn.water.util.constant.params.OZ_UK
-import com.phongpn.water.util.constant.params.OZ_US
-import com.phongpn.water.util.profileparams.UnitParams
-import com.phongpn.water.util.profileparams.WaterIntakeParams
+import com.phongpn.water.util.Drink
+import com.phongpn.water.util.formatTime
 import com.phongpn.water.viewmodel.LogDrinkViewModel
 import com.phongpn.water.viewmodel.MainFragmentUiState
 import com.phongpn.water.viewmodel.MainFragmentViewModel
@@ -49,39 +40,17 @@ class HomeFragment : BaseFragment() {
 
     private val mainFragmentViewModel: MainFragmentViewModel by viewModels()
 
-    private val waterIntakeParams = WaterIntakeParams.getInstance()
-    private val unitParams = UnitParams.getInstance()
     override fun onBackPressed() = Unit
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        mainFragmentViewModel.apply {
-            isActivateDay.value = waterIntakeParams.activeDay
-            isHotDay.value = waterIntakeParams.hotDay
-        }
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        unitParams.observers = mutableListOf()
-        waterIntakeParams.observers = mutableListOf()
-        AlarmSchedule.get().apply {
-            observers = mutableListOf()
-            observe { _, alarm ->
-                alarm as Alarm
-                alarm_tv.text =
-                    formatTime(Calendar.getInstance().apply { timeInMillis = alarm.time })
-            }
-            lifecycleScope.launch {
-                while (true) {
-                    getNextAlarm()?.let { notifyDataChanged(AlarmSchedule.ALARM, it) }
-                    delay(1000)
-                }
-            }
-        }
         setupViews()
         addObserver()
 
@@ -118,11 +87,6 @@ class HomeFragment : BaseFragment() {
             if (!drinkToday) mainFragmentViewModel.changeTotalDrinkToday(0)
 
         }
-        mainViewModel.apply {
-            unitDrink.observe(viewLifecycleOwner) {
-                mainFragmentViewModel.changeUnitDrink()
-            }
-        }
         mainFragmentViewModel.apply {
             mainFragmentUiState.observe(viewLifecycleOwner) {
                 it?.let { changeWave(it) }
@@ -137,6 +101,29 @@ class HomeFragment : BaseFragment() {
                 mainFragmentViewModel.saveShortcutIcon(context!!)
             }
         }
+
+        mainViewModel.goal.observe(viewLifecycleOwner) { newGoal ->
+            mainFragmentViewModel.changeGoal(newGoal)
+        }
+
+        mainViewModel.nextAlarmFire.observe(viewLifecycleOwner) {
+            alarm_tv.text =
+                formatTime(Calendar.getInstance().apply { timeInMillis = it.time })
+        }
+
+//        AlarmSchedule.get().apply {
+//            observers = mutableListOf()
+//            observe { _, alarm ->
+//                alarm as Alarm
+//
+//            }
+//            lifecycleScope.launch {
+//                while (true) {
+//                    getNextAlarm()?.let { notifyDataChanged(AlarmSchedule.ALARM, it) }
+//                    delay(1000)
+//                }
+//            }
+//        }
     }
 
     private fun changeWave(state: MainFragmentUiState) {
@@ -145,7 +132,7 @@ class HomeFragment : BaseFragment() {
             intake_drink_tv.text = intakePreview
             if (process < 100) {
                 enough_drink_tv.text = getString(R.string.you_have_to_drink)
-                remain_drink_tv.text = "$remainToday ${unitParams.unitDrink}"
+                remain_drink_tv.text = "$remainToday ml"
                 ratio_drink_tv.apply {
                     text = "${process.toInt()} %"
                     visibility = View.VISIBLE
